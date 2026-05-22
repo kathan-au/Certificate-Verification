@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Issue Certificate</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">CV</span>
+        <span>Certificate Verification</span>
+      </div>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="/issue.html" aria-current="page">Issue</a>
+        <a href="/admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <main class="shell layout">
+      <section class="panel">
+        <h1>Issue Certificate</h1>
+        <p>Connect an approved Sepolia issuer wallet, prepare the off-chain certificate, then submit its proof hash to the blockchain.</p>
+
+        <div class="stack">
+          <div class="actions">
+            <button id="connectWallet" type="button">Connect MetaMask</button>
+            <span id="walletStatus" class="status warning">Wallet not connected</span>
+          </div>
+
+          <form id="certificateForm" class="form-grid">
+            <div class="field">
+              <label for="certificateId">Certificate ID</label>
+              <input id="certificateId" name="certificateId" required placeholder="CERT-2026-001">
+            </div>
+
+            <div class="field">
+              <label for="studentId">Student ID</label>
+              <input id="studentId" name="studentId" required placeholder="STU-1007">
+            </div>
+
+            <div class="field full">
+              <label for="studentName">Student Name</label>
+              <input id="studentName" name="studentName" required placeholder="Avery Johnson">
+            </div>
+
+            <div class="field full">
+              <label for="program">Course / Program</label>
+              <input id="program" name="program" required placeholder="Bachelor of Computer Science">
+            </div>
+
+            <div class="field">
+              <label for="grade">Grade / Classification</label>
+              <input id="grade" name="grade" required placeholder="First Class Honours">
+            </div>
+
+            <div class="field">
+              <label for="issueDate">Issue Date</label>
+              <input id="issueDate" name="issueDate" type="date" required>
+            </div>
+
+            <div class="field full">
+              <label for="universityName">University Name</label>
+              <input id="universityName" name="universityName" required value="Demo University">
+            </div>
+
+            <div class="field full">
+              <button id="issueButton" type="submit" disabled>Generate And Issue</button>
+            </div>
+          </form>
+
+          <div id="formStatus" class="status warning">Waiting for an approved issuer wallet.</div>
+        </div>
+      </section>
+
+      <aside class="panel preview">
+        <h2>Certificate Preview</h2>
+        <div id="previewEmpty" class="empty">A generated PNG certificate will appear here after the off-chain record is prepared.</div>
+        <img id="certificatePreview" alt="Generated certificate preview" hidden>
+        <dl id="proofDetails" class="proof-list" hidden></dl>
+        <div id="downloadActions" class="actions" hidden>
+          <a id="downloadCertificate" class="button secondary" href="#" download>Download PNG</a>
+          <a id="openVerification" class="button secondary" href="#" target="_blank" rel="noreferrer">Open Verification</a>
+        </div>
+      </aside>
+    </main>
+
+    <script src="/vendor/ethers.js"></script>
+    <script src="/issue.js"></script>
+  </body>
+</html>

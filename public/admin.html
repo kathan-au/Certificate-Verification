@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Issuer Admin</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">CV</span>
+        <span>Certificate Verification</span>
+      </div>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="/issue.html">Issue</a>
+        <a href="/admin.html" aria-current="page">Admin</a>
+      </nav>
+    </header>
+
+    <main class="shell layout">
+      <section class="panel">
+        <h1>Issuer Registry Admin</h1>
+        <p>Use the university admin wallet to approve or remove staff wallets that may issue certificate proofs.</p>
+
+        <div class="stack">
+          <div class="actions">
+            <button id="connectWallet" type="button">Connect MetaMask</button>
+            <span id="walletStatus" class="status warning">Wallet not connected</span>
+          </div>
+
+          <form id="issuerForm" class="stack">
+            <div class="field">
+              <label for="issuerWallet">Staff Wallet Address</label>
+              <input id="issuerWallet" name="issuerWallet" required placeholder="0x...">
+            </div>
+
+            <div class="actions">
+              <button id="approveButton" type="button" disabled>Approve Issuer</button>
+              <button id="removeButton" class="danger" type="button" disabled>Remove Issuer</button>
+              <button id="checkButton" class="secondary" type="button" disabled>Check Status</button>
+            </div>
+          </form>
+
+          <div id="adminStatus" class="status warning">Connect the admin wallet to manage issuers.</div>
+        </div>
+      </section>
+
+      <aside class="panel">
+        <h2>Registry State</h2>
+        <dl id="registryDetails" class="proof-list">
+          <div>
+            <dt>Issuer Registry</dt>
+            <dd class="mono" id="issuerRegistryAddress">Not loaded</dd>
+          </div>
+          <div>
+            <dt>Admin Wallet</dt>
+            <dd class="mono" id="adminWallet">Not loaded</dd>
+          </div>
+          <div>
+            <dt>Connected Wallet</dt>
+            <dd class="mono" id="connectedWallet">Not connected</dd>
+          </div>
+        </dl>
+      </aside>
+    </main>
+
+    <script src="/vendor/ethers.js"></script>
+    <script src="/admin.js"></script>
+  </body>
+</html>
