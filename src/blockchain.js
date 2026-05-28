@@ -22,6 +22,7 @@ async function readJson(filePath) {
   return JSON.parse(await fs.readFile(filePath, 'utf8'));
 }
 
+// ABIs are served to the browser so MetaMask can call the deployed contracts.
 export async function getAbis() {
   if (!issuerAbi) {
     issuerAbi = await readJson(path.join(rootDir, 'abi', 'IssuerRegistry.json'));
@@ -35,6 +36,7 @@ export async function getAbis() {
   };
 }
 
+// The backend uses a read-only provider for public verification. It never signs transactions.
 export function getProvider() {
   if (!process.env.SEPOLIA_RPC_URL) {
     throw new Error('SEPOLIA_RPC_URL is not configured');
@@ -47,6 +49,7 @@ export function getProvider() {
   return provider;
 }
 
+// Routes use this guard to show a clear setup error before trying blockchain reads.
 export function contractsAreConfigured() {
   return (
     isAddress(issuerRegistryAddress) &&
@@ -56,6 +59,7 @@ export function contractsAreConfigured() {
   );
 }
 
+// Build read-only contract instances for backend verification checks.
 export async function getReadContracts() {
   if (!contractsAreConfigured()) {
     throw new Error('Contract addresses are not configured');
@@ -74,6 +78,7 @@ export async function getReadContracts() {
   };
 }
 
+// Read the immutable proof stored by CertificateRegistry for one certificate ID.
 export async function getCertificateProof(certificateId) {
   const { certificateRegistry } = await getReadContracts();
   const [certificateHash, issuer, issuedAt, exists] =
@@ -87,6 +92,7 @@ export async function getCertificateProof(certificateId) {
   };
 }
 
+// Used during preparation to reject issuance from a wallet that is not approved.
 export async function isApprovedIssuer(address) {
   if (!isAddress(address)) {
     return false;

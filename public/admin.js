@@ -19,6 +19,7 @@ approveButton.addEventListener('click', approveIssuer);
 removeButton.addEventListener('click', removeIssuer);
 checkButton.addEventListener('click', checkIssuer);
 
+// Connect the admin wallet and enable write actions only for the contract admin.
 async function connectAdminWallet() {
   try {
     requireMetaMask();
@@ -69,6 +70,7 @@ async function removeIssuer() {
   await sendIssuerTransaction('remove');
 }
 
+// Shared MetaMask transaction flow for approving and removing issuer wallets.
 async function sendIssuerTransaction(action) {
   try {
     const wallet = getIssuerWallet();
@@ -91,6 +93,7 @@ async function sendIssuerTransaction(action) {
   }
 }
 
+// Anyone can read whether a wallet is approved; only the admin can change it.
 async function checkIssuer() {
   try {
     const wallet = getIssuerWallet();
@@ -106,6 +109,7 @@ async function checkIssuer() {
   }
 }
 
+// Load IssuerRegistry details from the backend so the page can create a contract object.
 async function loadAppConfig() {
   const response = await fetch('/api/config');
   const config = await response.json();
@@ -123,6 +127,7 @@ async function connectMetaMask() {
   await window.ethereum.request({ method: 'eth_requestAccounts' });
 }
 
+// Keep admin operations on the configured Sepolia chain.
 async function switchToRequiredNetwork() {
   const requiredChainId = `0x${Number(appConfig.chainId).toString(16)}`;
   const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });

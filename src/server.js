@@ -36,6 +36,7 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(publicDir));
 
+// Serve the browser build of ethers.js from node_modules for the plain HTML frontend.
 app.get('/vendor/ethers.js', (request, response) => {
   const ethersPath = path.join(rootDir, 'node_modules', 'ethers', 'dist', 'ethers.umd.min.js');
 
@@ -51,12 +52,14 @@ app.get('/', (request, response) => {
   response.redirect('/issue.html');
 });
 
+// Public QR verification page. Employers do not need a wallet or gas.
 app.get('/verify/:token', async (request, response) => {
   const result = await verifyCertificate(request.params.token);
   const pageStatus = result.httpStatus === 404 ? 404 : 200;
   response.status(pageStatus).send(renderVerificationPage(result));
 });
 
+// Frontend uses this to learn the deployed contract addresses and ABIs.
 app.get('/api/config', async (request, response) => {
   const { issuerRegistryAbi, certificateRegistryAbi } = await getAbis();
 
@@ -70,6 +73,7 @@ app.get('/api/config', async (request, response) => {
   });
 });
 
+// Prepare the off-chain certificate record before the staff submits the on-chain transaction.
 app.post('/api/certificates', async (request, response) => {
   try {
     const issuerWallet = normalizeWallet(request.body.issuerWallet);
@@ -124,6 +128,7 @@ app.post('/api/certificates', async (request, response) => {
   }
 });
 
+// Save the mined blockchain transaction hash after MetaMask confirms issuance.
 app.post('/api/certificates/:certificateId/transaction', async (request, response) => {
   try {
     const txHash = String(request.body.txHash || '').trim();
@@ -154,6 +159,7 @@ app.post('/api/certificates/:certificateId/transaction', async (request, respons
   }
 });
 
+// Keep unknown routes friendly for bad links and mistyped QR URLs.
 app.use((request, response) => {
   response.status(404).send(`
     <!doctype html>
@@ -185,6 +191,7 @@ function getBaseUrl() {
   return (process.env.APP_BASE_URL || `http://localhost:${port}`).replace(/\/$/, '');
 }
 
+// Wallet addresses come from the browser, so validate them before saving or checking approval.
 function normalizeWallet(wallet) {
   if (!wallet) {
     return null;
@@ -198,6 +205,7 @@ function normalizeWallet(wallet) {
   return normalized;
 }
 
+// MySQL may return dates as Date objects or strings depending on configuration.
 function formatDate(value) {
   if (value instanceof Date) {
     const year = value.getFullYear();
@@ -209,6 +217,7 @@ function formatDate(value) {
   return String(value).slice(0, 10);
 }
 
+// Convert a database row back into the exact fields used by the canonical hash.
 function toHashInput(row) {
   return {
     certificateId: row.certificate_id,
@@ -221,6 +230,7 @@ function toHashInput(row) {
   };
 }
 
+// Only expose the fields that are useful on the public verification page.
 function toPublicCertificate(row) {
   return {
     certificateId: row.certificate_id,
@@ -235,6 +245,7 @@ function toPublicCertificate(row) {
   };
 }
 
+// Main verification flow: compare recalculated off-chain hash with immutable on-chain proof.
 async function verifyCertificate(token) {
   try {
     const certificate = await getCertificateByToken(token);
@@ -294,6 +305,7 @@ async function verifyCertificate(token) {
   }
 }
 
+// Escape server-rendered values to avoid injecting untrusted certificate data into HTML.
 function escapeHtml(value) {
   return String(value ?? '')
     .replaceAll('&', '&amp;')
@@ -303,6 +315,7 @@ function escapeHtml(value) {
     .replaceAll("'", '&#039;');
 }
 
+// Render one simple public result page for valid, invalid, and unavailable states.
 function renderVerificationPage(result) {
   const certificate = result.certificate;
   const badgeClass = result.status === 'valid'

@@ -5,6 +5,7 @@ dotenv.config();
 
 let pool;
 
+// Reuse one MySQL connection pool across all requests.
 export function getPool() {
   if (!pool) {
     pool = mysql.createPool({
@@ -28,6 +29,7 @@ async function runQuery(sql, params = []) {
   return rows;
 }
 
+// Save certificate details and generated file paths together so they stay in sync.
 export async function saveCertificate(certificate, files) {
   const connection = await getPool().getConnection();
 
@@ -83,6 +85,7 @@ export async function saveCertificate(certificate, files) {
   }
 }
 
+// Public verification starts from the QR token, not from full certificate data in the QR code.
 export async function getCertificateByToken(token) {
   const rows = await runQuery(
     `SELECT
@@ -100,6 +103,7 @@ export async function getCertificateByToken(token) {
   return rows[0] || null;
 }
 
+// After MetaMask confirms the blockchain transaction, store its hash for audit/display.
 export async function saveTransactionHash(certificateId, txHash, issuerWallet) {
   const result = await runQuery(
     `UPDATE certificates

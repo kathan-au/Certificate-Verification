@@ -21,6 +21,7 @@ issueDateInput.valueAsDate = new Date();
 connectButton.addEventListener('click', connectIssuerWallet);
 certificateForm.addEventListener('submit', issueCertificate);
 
+// Connect MetaMask, switch to Sepolia, and check that this staff wallet is approved.
 async function connectIssuerWallet() {
   try {
     requireMetaMask();
@@ -63,6 +64,7 @@ async function connectIssuerWallet() {
   }
 }
 
+// Prepare the off-chain certificate first, then write the proof hash on-chain through MetaMask.
 async function issueCertificate(event) {
   event.preventDefault();
 
@@ -100,6 +102,7 @@ async function issueCertificate(event) {
   }
 }
 
+// Load deployed contract addresses and ABIs from the backend.
 async function loadAppConfig() {
   const response = await fetch('/api/config');
   const config = await response.json();
@@ -115,6 +118,7 @@ async function connectMetaMask() {
   await window.ethereum.request({ method: 'eth_requestAccounts' });
 }
 
+// The prototype expects Sepolia, so ask MetaMask to switch if needed.
 async function switchToRequiredNetwork() {
   const requiredChainId = `0x${Number(appConfig.chainId).toString(16)}`;
   const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
@@ -127,6 +131,7 @@ async function switchToRequiredNetwork() {
   }
 }
 
+// Ask the backend to validate, hash, save, and generate the certificate image/QR.
 async function prepareCertificate() {
   const payload = Object.fromEntries(new FormData(certificateForm).entries());
   payload.issuerWallet = issuerWallet;
@@ -145,6 +150,7 @@ async function prepareCertificate() {
   return result;
 }
 
+// Store the transaction hash only after the blockchain transaction has been mined.
 async function saveTransactionHash(certificateId, txHash) {
   const response = await fetch(`/api/certificates/${encodeURIComponent(certificateId)}/transaction`, {
     method: 'POST',
@@ -161,6 +167,7 @@ async function saveTransactionHash(certificateId, txHash) {
   }
 }
 
+// Show the generated certificate image and the proof values returned by the backend.
 function showCertificatePreview(certificate) {
   previewEmpty.hidden = true;
   certificatePreview.hidden = false;
@@ -191,6 +198,7 @@ function addProofDetail(label, value) {
   proofDetails.append(wrapper);
 }
 
+// This page needs MetaMask for writes and ethers.js for contract calls.
 function requireMetaMask() {
   if (!window.ethereum || !window.ethers) {
     throw new Error('MetaMask and ethers.js are required.');

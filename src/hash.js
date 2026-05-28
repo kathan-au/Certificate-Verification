@@ -10,6 +10,7 @@ const requiredFields = [
   'universityName'
 ];
 
+// Normalize every field before hashing so the same certificate always produces the same hash.
 export function normalizeCertificateInput(input) {
   const normalized = {};
 
@@ -33,11 +34,13 @@ export function normalizeCertificateInput(input) {
   return normalized;
 }
 
+// This is the canonical string format shared by the backend and blockchain proof flow.
 export function createCanonicalCertificateString(input) {
   const normalized = normalizeCertificateInput(input);
   return requiredFields.map((field) => normalized[field]).join('|');
 }
 
+// The resulting keccak256 hash is the only certificate content stored on-chain.
 export function hashCertificate(input) {
   const canonicalString = createCanonicalCertificateString(input);
   return {
@@ -46,6 +49,7 @@ export function hashCertificate(input) {
   };
 }
 
+// Printed on the certificate image so users can visually identify the proof hash.
 export function shortFingerprint(hash) {
   if (!hash || hash.length < 14) {
     return 'Unavailable';

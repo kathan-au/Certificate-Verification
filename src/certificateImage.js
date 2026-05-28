@@ -21,6 +21,7 @@ function escapeXml(value) {
     .replaceAll("'", '&apos;');
 }
 
+// Certificate IDs can contain characters that are not safe for file names.
 function safeFileName(value) {
   return String(value).replace(/[^a-z0-9_-]/gi, '_');
 }
@@ -30,6 +31,7 @@ async function ensureOutputDirs() {
   await fs.mkdir(qrDir, { recursive: true });
 }
 
+// Create both public assets: the QR code and the final PNG certificate image.
 export async function generateCertificateAssets(certificate, verificationUrl) {
   await ensureOutputDirs();
 
@@ -51,6 +53,7 @@ export async function generateCertificateAssets(certificate, verificationUrl) {
   const qrDataUri = `data:image/png;base64,${qrData.toString('base64')}`;
   const fingerprint = shortFingerprint(certificate.certificateHash);
 
+  // The certificate is designed as SVG first, then rendered to PNG with sharp.
   const svg = `
     <svg width="1400" height="980" viewBox="0 0 1400 980" xmlns="http://www.w3.org/2000/svg">
       <rect width="1400" height="980" fill="#f7f3ea"/>
